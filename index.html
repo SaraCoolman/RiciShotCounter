@@ -1,9 +1,11 @@
-```html
 <!DOCTYPE html>
 <html lang="de">
 <head>
   <meta charset="UTF-8">
   <title>Ricis Sauf Counter</title>
+
+  <!-- Wichtig für Mobile -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
     body {
@@ -15,38 +17,39 @@
     }
 
     h1 {
-      font-size: 3rem;
+      font-size: 8vw;
       margin-top: 20px;
     }
 
     img {
-      width: 200px;
+      width: 60%;
+      max-width: 250px;
       margin: 20px auto;
       border-radius: 20px;
       box-shadow: 0 0 20px rgba(255,255,255,0.3);
     }
 
     #count {
-      font-size: 6rem;
-      margin: 20px;
+      font-size: 20vw;
+      margin: 10px;
       font-weight: bold;
     }
 
     #message {
-      font-size: 1.5rem;
+      font-size: 6vw;
       color: #00ffcc;
-      margin-bottom: 10px;
-      height: 30px;
+      height: 40px;
     }
 
     button {
-      font-size: 1.5rem;
+      width: 80%;
+      max-width: 300px;
+      font-size: 6vw;
       margin: 10px;
-      padding: 15px 30px;
+      padding: 15px;
       border: none;
-      border-radius: 12px;
+      border-radius: 15px;
       cursor: pointer;
-      transition: 0.2s;
     }
 
     .add {
@@ -61,7 +64,7 @@
 
 <body>
 
-  <h1>🍻 Ricis Sauf Counter</h1>
+  <h1>🍾 Ricis Sauf Counter</h1>
 
   <img src="dein-bild.jpg" alt="Party Bild">
 
@@ -71,6 +74,9 @@
   <button class="add" onclick="add()">+1 Shot</button>
   <button class="reset" onclick="reset()">Reset</button>
 
+  <!-- Sound -->
+  <audio id="sound" src="sound.mp3"></audio>
+
   <script>
     let count = localStorage.getItem("riciShots") || 0;
     count = parseInt(count);
@@ -79,6 +85,9 @@
     function add() {
       count++;
       update();
+
+      // 🔊 Sound abspielen
+      document.getElementById("sound").play();
     }
 
     function reset() {
@@ -90,7 +99,7 @@
       document.getElementById("count").innerText = count;
       localStorage.setItem("riciShots", count);
 
-      // 🔥 Mojito Check
+      // 🍹 Mojito Check
       if (count % 5 === 0 && count !== 0) {
         document.getElementById("message").innerText = "🍹 Zeit für Mojito Shot!";
       } else {
@@ -101,4 +110,3 @@
 
 </body>
 </html>
-```
