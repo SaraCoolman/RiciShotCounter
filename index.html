@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -41,6 +40,12 @@
       height: 40px;
     }
 
+    #timer {
+      font-size: 7vw;
+      margin-top: 10px;
+      color: orange;
+    }
+
     button {
       width: 80%;
       max-width: 300px;
@@ -59,11 +64,12 @@
 
 <body>
 
-  <h1>🍾 MEHR IS MEHR</h1>
+  <h1>🍾 MEHR IS MEHR 🍾 </h1>
 
   <img src="dein-bild.jpg" alt="Party Bild">
 
   <div id="count">0</div>
+  <div id="timer">30:00</div>
   <div id="message"></div>
 
   <button class="add" onclick="add()">+1 Shot</button>
@@ -77,36 +83,39 @@
     let count = localStorage.getItem("riciShots") || 0;
     count = parseInt(count);
 
-    let lastShotTime = localStorage.getItem("lastShotTime") || Date.now();
-
-    document.getElementById("count").innerText = count;
+    let lastShotTime = localStorage.getItem("lastShotTime");
+    if (!lastShotTime) lastShotTime = Date.now();
+    lastShotTime = parseInt(lastShotTime);
 
     const shotSound = document.getElementById("shotSound");
     const alarmSound = document.getElementById("alarmSound");
+
+    document.getElementById("count").innerText = count;
 
     function add() {
       count++;
       lastShotTime = Date.now();
 
+      shotSound.play();
       update();
 
-      // 🔊 normaler Shot Sound
-      shotSound.play();
+      localStorage.setItem("riciShots", count);
+      localStorage.setItem("lastShotTime", lastShotTime);
     }
 
     function reset() {
       count = 0;
       lastShotTime = Date.now();
       update();
+
+      localStorage.setItem("riciShots", count);
+      localStorage.setItem("lastShotTime", lastShotTime);
     }
 
     function update() {
       document.getElementById("count").innerText = count;
 
-      localStorage.setItem("riciShots", count);
-      localStorage.setItem("lastShotTime", lastShotTime);
-
-      // 🍹 alle 5 Shots
+      // 🍾 alle 5 Shots
       if (count % 5 === 0 && count !== 0) {
         document.getElementById("message").innerText =
           "🍹 Zeit für Shot!";
@@ -115,24 +124,33 @@
       }
     }
 
-    // ⏰ 30 Minuten Shot Alarm
+    // ⏱️ Live Countdown + Alarm
     setInterval(() => {
       let now = Date.now();
-      let diff = now - lastShotTime;
+      let diff = 1800000 - (now - lastShotTime); // 30 min
 
-      if (diff >= 1800000) {
+      if (diff < 0) diff = 0;
+
+      let minutes = Math.floor(diff / 60000);
+      let seconds = Math.floor((diff % 60000) / 1000);
+
+      document.getElementById("timer").innerText =
+        `${minutes}:${seconds.toString().padStart(2, "0")}`;
+
+      // 🚨 Alarm
+      if (diff === 0) {
         document.getElementById("message").innerText =
           "🚨 SHOT ALARM – Zeit für Sekt! 🍾";
 
-        // 🔊 anderer Sound für Alarm
         alarmSound.play();
 
+        // reset timer damit es nicht spammt
         lastShotTime = Date.now();
         localStorage.setItem("lastShotTime", lastShotTime);
       }
-    }, 10000);
+
+    }, 1000);
   </script>
 
 </body>
 </html>
-```
