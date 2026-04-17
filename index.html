@@ -81,7 +81,7 @@
 
   <button class="add" onclick="addShot()">+1 Shot</button>
   <button class="task" onclick="addTask()">+1 Aufgabe</button>
-  <button class="alarm" onclick="startAlarm()">🚨 Start Alarm</button>
+  <button class="alarm" onclick="toggleAlarm()">🚨 Start Alarm</button>
   <button class="reset" onclick="resetAll()">Reset</button>
 
   <!-- Sounds -->
@@ -100,6 +100,7 @@
     const taskSound = document.getElementById("taskSound");
     const chaosSound = document.getElementById("chaosSound");
 
+    let alarmActive = false;
     let alarmTriggered = false;
     let chaosTriggered = false;
 
@@ -115,18 +116,18 @@
     function stopAlarm() {
       alarmSound.pause();
       alarmSound.currentTime = 0;
+      alarmActive = false;
       alarmTriggered = false;
     }
 
     function chaosMode() {
       if (chaosTriggered) return;
-
       chaosTriggered = true;
 
       playSound(chaosSound);
 
       document.getElementById("message").innerText =
-        "💀 CHAOS MODE AKTIVIERT 💀";
+        "💀 Super Rici! Du bist jetzt betrunken und hast alles geschafft💀";
 
       let blink = 0;
 
@@ -161,19 +162,31 @@
     function addTask() {
       taskCount++;
 
-      playSound(taskSound);
+      localStorage.setItem("tasks", taskCount);
 
       update();
 
-      localStorage.setItem("tasks", taskCount);
+      // 💀 TASK 11 → nur Chaos, kein Task Sound
+      if (taskCount === 11) {
+        chaosMode();
+        return;
+      }
+
+      playSound(taskSound);
     }
 
-    function startAlarm() {
-      alarmTriggered = false;
-      playSound(alarmSound);
+    function toggleAlarm() {
+      if (alarmActive) {
+        alarmSound.pause();
+        alarmSound.currentTime = 0;
+        alarmActive = false;
+        return;
+      }
 
-      document.getElementById("message").innerText =
-        "🚨 MANUELLER ALARM!";
+      alarmActive = true;
+      alarmTriggered = false;
+
+      playSound(alarmSound);
     }
 
     function resetAll() {
@@ -183,6 +196,7 @@
 
       chaosTriggered = false;
       stopAlarm();
+
       update();
 
       localStorage.setItem("shots", count);
@@ -200,14 +214,7 @@
         return;
       }
 
-      // 📋 SPECIAL TEXT
-      if (taskCount === 11) {
-        document.getElementById("message").innerText =
-          "📋 Super Rici! du hast alle Aufgaben bestanden - deine Belohnung ist ein Vollrausch";
-        return;
-      }
-
-      // 🍹 SHOT INFO
+      // 🍹 SHOT MESSAGE
       if (count !== 0 && count % 5 === 0) {
         document.getElementById("message").innerText =
           "🍹 Zeit zum Mojito Shot ins Goscherl fetzen";
@@ -226,7 +233,7 @@
       document.getElementById("timer").innerText =
         `${minutes}:${seconds.toString().padStart(2, "0")}`;
 
-      if (diff === 0 && !alarmTriggered) {
+      if (diff === 0 && !alarmTriggered && alarmActive) {
         alarmTriggered = true;
 
         document.getElementById("message").innerText =
