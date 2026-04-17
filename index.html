@@ -103,6 +103,7 @@
     let alarmActive = false;
     let alarmTriggered = false;
     let chaosTriggered = false;
+	let shotMessageTimeout = null;
 
     document.getElementById("count").innerText = count;
     document.getElementById("taskCount").innerText = taskCount;
@@ -205,21 +206,31 @@
     }
 
     function update() {
-      document.getElementById("count").innerText = count;
-      document.getElementById("taskCount").innerText = taskCount;
+  document.getElementById("count").innerText = count;
+  document.getElementById("taskCount").innerText = taskCount;
 
-      // 💀 CHAOS MODE
-      if (taskCount === 11) {
-        chaosMode();
-        return;
-      }
+  // 💀 CHAOS MODE
+  if (taskCount === 11) {
+    chaosMode();
+    return;
+  }
 
-      // 🍹 SHOT MESSAGE
-      if (count !== 0 && count % 5 === 0) {
-        document.getElementById("message").innerText =
-          "🍹 Zeit zum Mojito Shot ins Goscherl fetzen";
-      }
+  // 🍹 SHOT MESSAGE (nur kurz anzeigen)
+  if (count !== 0 && count % 5 === 0) {
+    const msg = document.getElementById("message");
+    msg.innerText = "🍹 Zeit zum Mojito Shot ins Goscherl fetzen";
+
+    // alten Timer löschen
+    if (shotMessageTimeout) {
+      clearTimeout(shotMessageTimeout);
     }
+
+    // nach 3 Sekunden wieder entfernen
+    shotMessageTimeout = setTimeout(() => {
+      msg.innerText = "";
+    }, 3000);
+  }
+}
 
     setInterval(() => {
       let now = Date.now();
