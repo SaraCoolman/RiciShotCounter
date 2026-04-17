@@ -1,10 +1,10 @@
+```html
 <!DOCTYPE html>
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <title>Ricis Sauf Counter</title>
+  <title>MEHR IS MEHR</title>
 
-  <!-- Wichtig für Mobile -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
@@ -52,19 +52,14 @@
       cursor: pointer;
     }
 
-    .add {
-      background: limegreen;
-    }
-
-    .reset {
-      background: crimson;
-    }
+    .add { background: limegreen; }
+    .reset { background: crimson; }
   </style>
 </head>
 
 <body>
 
-  <h1>🍾 Ricis Sauf Counter</h1>
+  <h1>🍾 MEHR IS MEHR</h1>
 
   <img src="dein-bild.jpg" alt="Party Bild">
 
@@ -74,39 +69,70 @@
   <button class="add" onclick="add()">+1 Shot</button>
   <button class="reset" onclick="reset()">Reset</button>
 
-  <!-- Sound -->
-  <audio id="sound" src="sound.mp3"></audio>
+  <!-- Sounds -->
+  <audio id="shotSound" src="sound.mp3"></audio>
+  <audio id="alarmSound" src="alarm.mp3"></audio>
 
   <script>
     let count = localStorage.getItem("riciShots") || 0;
     count = parseInt(count);
+
+    let lastShotTime = localStorage.getItem("lastShotTime") || Date.now();
+
     document.getElementById("count").innerText = count;
+
+    const shotSound = document.getElementById("shotSound");
+    const alarmSound = document.getElementById("alarmSound");
 
     function add() {
       count++;
+      lastShotTime = Date.now();
+
       update();
 
-      // 🔊 Sound abspielen
-      document.getElementById("sound").play();
+      // 🔊 normaler Shot Sound
+      shotSound.play();
     }
 
     function reset() {
       count = 0;
+      lastShotTime = Date.now();
       update();
     }
 
     function update() {
       document.getElementById("count").innerText = count;
-      localStorage.setItem("riciShots", count);
 
-      // 🍹 Mojito Check
+      localStorage.setItem("riciShots", count);
+      localStorage.setItem("lastShotTime", lastShotTime);
+
+      // 🍹 alle 5 Shots
       if (count % 5 === 0 && count !== 0) {
-        document.getElementById("message").innerText = "🍹 Zeit für Mojito Shot!";
+        document.getElementById("message").innerText =
+          "🍹 Zeit für Shot!";
       } else {
         document.getElementById("message").innerText = "";
       }
     }
+
+    // ⏰ 30 Minuten Shot Alarm
+    setInterval(() => {
+      let now = Date.now();
+      let diff = now - lastShotTime;
+
+      if (diff >= 1800000) {
+        document.getElementById("message").innerText =
+          "🚨 SHOT ALARM – Zeit für Sekt! 🍾";
+
+        // 🔊 anderer Sound für Alarm
+        alarmSound.play();
+
+        lastShotTime = Date.now();
+        localStorage.setItem("lastShotTime", lastShotTime);
+      }
+    }, 10000);
   </script>
 
 </body>
 </html>
+```
