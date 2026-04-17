@@ -159,13 +159,21 @@
     }
 
     function update() {
-      document.getElementById("count").innerText = count;
-      document.getElementById("taskCount").innerText = taskCount;
+  document.getElementById("count").innerText = count;
+  document.getElementById("taskCount").innerText = taskCount;
 
-      if (count !== 0 && count % 5 === 0) {
-        document.getElementById("message").innerText = "🍹 Zeit zum Mojito Shot ins Goscherl fetzen!";
-      }
-    }
+  // 🧨 Spezialfall: Aufgabe 11
+  if (taskCount === 11) {
+    document.getElementById("message").innerText =
+      "📋 Super Rici! du hast alle Aufgaben bestanden - deine Belohnung ist ein Vollrausch";
+    return;
+  }
+
+  // 🍹 Shot Hinweis
+  if (count !== 0 && count % 5 === 0) {
+    document.getElementById("message").innerText = "🍹 Zeit zum Mojito Shot ins Goscherl fetzen";
+  }
+}
 
     setInterval(() => {
       let now = Date.now();
