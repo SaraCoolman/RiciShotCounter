@@ -12,6 +12,7 @@
       text-align: center;
       background: #ffd1dc;
       color: #111;
+      transition: background 0.2s;
     }
 
     h1 {
@@ -65,7 +66,7 @@
 
 <body>
 
-  <h1>🍾 MEHR IS MEHR 🍾 </h1>
+  <h1>🍾 MEHR IS MEHR 🍾</h1>
 
   <img src="dein-bild.jpg" alt="Party Bild">
 
@@ -87,6 +88,7 @@
   <audio id="shotSound" src="shotSound.mp3" preload="auto"></audio>
   <audio id="alarmSound" src="alarmSound.mp3" preload="auto"></audio>
   <audio id="taskSound" src="aufgabeSounde.mp3" preload="auto"></audio>
+  <audio id="chaosSound" src="chaosSound.mp3" preload="auto"></audio>
 
   <script>
     let count = parseInt(localStorage.getItem("shots") || "0", 10);
@@ -96,8 +98,10 @@
     const shotSound = document.getElementById("shotSound");
     const alarmSound = document.getElementById("alarmSound");
     const taskSound = document.getElementById("taskSound");
+    const chaosSound = document.getElementById("chaosSound");
 
     let alarmTriggered = false;
+    let chaosTriggered = false;
 
     document.getElementById("count").innerText = count;
     document.getElementById("taskCount").innerText = taskCount;
@@ -112,6 +116,33 @@
       alarmSound.pause();
       alarmSound.currentTime = 0;
       alarmTriggered = false;
+    }
+
+    function chaosMode() {
+      if (chaosTriggered) return;
+
+      chaosTriggered = true;
+
+      playSound(chaosSound);
+
+      document.getElementById("message").innerText =
+        "💀 CHAOS MODE AKTIVIERT 💀";
+
+      let blink = 0;
+
+      const interval = setInterval(() => {
+        document.body.style.background =
+          document.body.style.background === "red"
+            ? "#ffd1dc"
+            : "red";
+
+        blink++;
+
+        if (blink > 10) {
+          clearInterval(interval);
+          document.body.style.background = "#ffd1dc";
+        }
+      }, 200);
     }
 
     function addShot() {
@@ -138,7 +169,7 @@
     }
 
     function startAlarm() {
-      alarmTriggered = false; // erlaubt erneutes Triggern
+      alarmTriggered = false;
       playSound(alarmSound);
 
       document.getElementById("message").innerText =
@@ -150,6 +181,7 @@
       taskCount = 0;
       lastShotTime = Date.now();
 
+      chaosTriggered = false;
       stopAlarm();
       update();
 
@@ -159,21 +191,28 @@
     }
 
     function update() {
-  document.getElementById("count").innerText = count;
-  document.getElementById("taskCount").innerText = taskCount;
+      document.getElementById("count").innerText = count;
+      document.getElementById("taskCount").innerText = taskCount;
 
-  // 🧨 Spezialfall: Aufgabe 11
-  if (taskCount === 11) {
-    document.getElementById("message").innerText =
-      "📋 Super Rici! du hast alle Aufgaben bestanden - deine Belohnung ist ein Vollrausch";
-    return;
-  }
+      // 💀 CHAOS MODE
+      if (taskCount === 11) {
+        chaosMode();
+        return;
+      }
 
-  // 🍹 Shot Hinweis
-  if (count !== 0 && count % 5 === 0) {
-    document.getElementById("message").innerText = "🍹 Zeit zum Mojito Shot ins Goscherl fetzen";
-  }
-}
+      // 📋 SPECIAL TEXT
+      if (taskCount === 11) {
+        document.getElementById("message").innerText =
+          "📋 Super Rici! du hast alle Aufgaben bestanden - deine Belohnung ist ein Vollrausch";
+        return;
+      }
+
+      // 🍹 SHOT INFO
+      if (count !== 0 && count % 5 === 0) {
+        document.getElementById("message").innerText =
+          "🍹 Zeit zum Mojito Shot ins Goscherl fetzen";
+      }
+    }
 
     setInterval(() => {
       let now = Date.now();
