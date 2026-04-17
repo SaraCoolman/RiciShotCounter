@@ -1,0 +1,104 @@
+```html
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Ricis Sauf Counter</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: linear-gradient(135deg, #1a1a1a, #000);
+      color: white;
+    }
+
+    h1 {
+      font-size: 3rem;
+      margin-top: 20px;
+    }
+
+    img {
+      width: 200px;
+      margin: 20px auto;
+      border-radius: 20px;
+      box-shadow: 0 0 20px rgba(255,255,255,0.3);
+    }
+
+    #count {
+      font-size: 6rem;
+      margin: 20px;
+      font-weight: bold;
+    }
+
+    #message {
+      font-size: 1.5rem;
+      color: #00ffcc;
+      margin-bottom: 10px;
+      height: 30px;
+    }
+
+    button {
+      font-size: 1.5rem;
+      margin: 10px;
+      padding: 15px 30px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .add {
+      background: limegreen;
+    }
+
+    .reset {
+      background: crimson;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>🍻 Ricis Sauf Counter</h1>
+
+  <img src="dein-bild.jpg" alt="Party Bild">
+
+  <div id="count">0</div>
+  <div id="message"></div>
+
+  <button class="add" onclick="add()">+1 Shot</button>
+  <button class="reset" onclick="reset()">Reset</button>
+
+  <script>
+    let count = localStorage.getItem("riciShots") || 0;
+    count = parseInt(count);
+    document.getElementById("count").innerText = count;
+
+    function add() {
+      count++;
+      update();
+    }
+
+    function reset() {
+      count = 0;
+      update();
+    }
+
+    function update() {
+      document.getElementById("count").innerText = count;
+      localStorage.setItem("riciShots", count);
+
+      // 🔥 Mojito Check
+      if (count % 5 === 0 && count !== 0) {
+        document.getElementById("message").innerText = "🍹 Zeit für Mojito Shot!";
+      } else {
+        document.getElementById("message").innerText = "";
+      }
+    }
+  </script>
+
+</body>
+</html>
+```
