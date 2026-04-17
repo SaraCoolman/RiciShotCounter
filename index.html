@@ -58,6 +58,7 @@
 
     .add { background: limegreen; color: white; }
     .task { background: dodgerblue; color: white; }
+    .alarm { background: orange; color: white; }
     .reset { background: crimson; color: white; }
   </style>
 </head>
@@ -79,11 +80,13 @@
 
   <button class="add" onclick="addShot()">+1 Shot</button>
   <button class="task" onclick="addTask()">+1 Aufgabe</button>
+  <button class="alarm" onclick="startAlarm()">🚨 Start Alarm</button>
   <button class="reset" onclick="resetAll()">Reset</button>
 
   <!-- Sounds -->
   <audio id="shotSound" src="shotSound.mp3" preload="auto"></audio>
   <audio id="alarmSound" src="alarmSound.mp3" preload="auto"></audio>
+  <audio id="taskSound" src="aufgabeSounde.mp3" preload="auto"></audio>
 
   <script>
     let count = parseInt(localStorage.getItem("shots") || "0", 10);
@@ -92,6 +95,7 @@
 
     const shotSound = document.getElementById("shotSound");
     const alarmSound = document.getElementById("alarmSound");
+    const taskSound = document.getElementById("taskSound");
 
     let alarmTriggered = false;
 
@@ -107,6 +111,7 @@
     function stopAlarm() {
       alarmSound.pause();
       alarmSound.currentTime = 0;
+      alarmTriggered = false;
     }
 
     function addShot() {
@@ -125,8 +130,19 @@
     function addTask() {
       taskCount++;
 
+      playSound(taskSound);
+
       update();
+
       localStorage.setItem("tasks", taskCount);
+    }
+
+    function startAlarm() {
+      alarmTriggered = false; // erlaubt erneutes Triggern
+      playSound(alarmSound);
+
+      document.getElementById("message").innerText =
+        "🚨 MANUELLER ALARM!";
     }
 
     function resetAll() {
@@ -148,8 +164,6 @@
 
       if (count !== 0 && count % 5 === 0) {
         document.getElementById("message").innerText = "🍹 Zeit zum Mojito Shot ins Goscherl fetzen!";
-      } else {
-        document.getElementById("message").innerText = "";
       }
     }
 
