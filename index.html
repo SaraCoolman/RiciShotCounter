@@ -10,14 +10,14 @@
       margin: 0;
       font-family: Arial, sans-serif;
       text-align: center;
-      background: #ffd1dc; /* hellrosa */
+      background: #ffd1dc;
       color: #111;
     }
 
     h1 {
       font-size: 8vw;
       margin-top: 20px;
-      color: #87cefa; /* hellblau */
+      color: #87cefa;
     }
 
     img {
@@ -25,25 +25,24 @@
       max-width: 250px;
       margin: 20px auto;
       border-radius: 20px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.2);
     }
 
-    #count {
-      font-size: 20vw;
-      margin: 10px;
+    #count, #taskCount {
+      font-size: 16vw;
+      margin: 5px;
       font-weight: bold;
-    }
-
-    #message {
-      font-size: 6vw;
-      color: #ff1493;
-      height: 40px;
     }
 
     #timer {
       font-size: 7vw;
       margin-top: 10px;
       color: #ff8c00;
+    }
+
+    #message {
+      font-size: 6vw;
+      color: #ff1493;
+      min-height: 40px;
     }
 
     button {
@@ -58,102 +57,100 @@
     }
 
     .add { background: limegreen; color: white; }
+    .task { background: dodgerblue; color: white; }
     .reset { background: crimson; color: white; }
-    .test1 { background: dodgerblue; color: white; }
-    .test2 { background: purple; color: white; }
   </style>
 </head>
 
 <body>
 
-  <h1>🍾 MEHR IS MEHR</h1>
+  <h1>🍾 MEHR IS MEHR 🍾 </h1>
 
   <img src="dein-bild.jpg" alt="Party Bild">
 
+  <div>🍹 Shots</div>
   <div id="count">0</div>
+
+  <div>📋 Aufgaben</div>
+  <div id="taskCount">0</div>
+
   <div id="timer">30:00</div>
   <div id="message"></div>
 
-  <button class="add" onclick="add()">+1 Shot</button>
-  <button class="reset" onclick="reset()">Reset</button>
-
-  <button class="test1" onclick="testShotSound()">🔊 Shot Sound testen</button>
-  <button class="test2" onclick="testAlarmSound()">🚨 Alarm Sound testen</button>
+  <button class="add" onclick="addShot()">+1 Shot</button>
+  <button class="task" onclick="addTask()">+1 Aufgabe</button>
+  <button class="reset" onclick="resetAll()">Reset</button>
 
   <!-- Sounds -->
   <audio id="shotSound" src="shotSound.mp3" preload="auto"></audio>
   <audio id="alarmSound" src="alarmSound.mp3" preload="auto"></audio>
 
   <script>
-    let count = parseInt(localStorage.getItem("riciShots") || "0", 10);
+    let count = parseInt(localStorage.getItem("shots") || "0", 10);
+    let taskCount = parseInt(localStorage.getItem("tasks") || "0", 10);
     let lastShotTime = parseInt(localStorage.getItem("lastShotTime") || Date.now(), 10);
 
     const shotSound = document.getElementById("shotSound");
     const alarmSound = document.getElementById("alarmSound");
 
-    let audioUnlocked = false;
     let alarmTriggered = false;
 
     document.getElementById("count").innerText = count;
-
-    // 🔓 Audio Unlock (wichtig für mobile Browser)
-    function unlockAudio() {
-      if (audioUnlocked) return;
-      shotSound.play().then(() => {
-        shotSound.pause();
-        shotSound.currentTime = 0;
-      }).catch(() => {});
-      audioUnlocked = true;
-    }
-
-    document.body.addEventListener("click", unlockAudio, { once: true });
+    document.getElementById("taskCount").innerText = taskCount;
 
     function playSound(audio) {
+      audio.pause();
       audio.currentTime = 0;
-      audio.play().catch(e => console.log("Audio blockiert:", e));
+      audio.play().catch(() => {});
     }
 
-    function add() {
-      unlockAudio();
+    function stopAlarm() {
+      alarmSound.pause();
+      alarmSound.currentTime = 0;
+    }
 
+    function addShot() {
       count++;
       lastShotTime = Date.now();
 
+      stopAlarm();
       playSound(shotSound);
+
       update();
 
-      localStorage.setItem("riciShots", count);
+      localStorage.setItem("shots", count);
       localStorage.setItem("lastShotTime", lastShotTime);
     }
 
-    function reset() {
-      count = 0;
-      lastShotTime = Date.now();
+    function addTask() {
+      taskCount++;
 
       update();
+      localStorage.setItem("tasks", taskCount);
+    }
 
-      localStorage.setItem("riciShots", count);
+    function resetAll() {
+      count = 0;
+      taskCount = 0;
+      lastShotTime = Date.now();
+
+      stopAlarm();
+      update();
+
+      localStorage.setItem("shots", count);
+      localStorage.setItem("tasks", taskCount);
       localStorage.setItem("lastShotTime", lastShotTime);
     }
 
     function update() {
       document.getElementById("count").innerText = count;
+      document.getElementById("taskCount").innerText = taskCount;
 
       if (count !== 0 && count % 5 === 0) {
-        document.getElementById("message").innerText = "🍹 Zeit für Mojito Shot!";
+        document.getElementById("message").innerText = "🍹 Zeit zum Mojito Shot ins Goscherl fetzen!";
       } else {
         document.getElementById("message").innerText = "";
       }
-    }
-
-    function testShotSound() {
-      unlockAudio();
-      playSound(shotSound);
-    }
-
-    function testAlarmSound() {
-      unlockAudio();
-      playSound(alarmSound);
     }
 
     setInterval(() => {
@@ -172,7 +169,7 @@
         alarmTriggered = true;
 
         document.getElementById("message").innerText =
-          "🚨 SHOT ALARM – Zeit für Sekt! 🍾";
+          "🚨 Zeit für einen Shot oder eine Aufgabe 🍾📋";
 
         playSound(alarmSound);
       }
